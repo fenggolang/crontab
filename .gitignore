@@ -13,3 +13,7 @@
 
 .idea
 .idea/*
+
+# 删除编译生成的二进制文件
+crontab/master/main/cron-master
+crontab/worker/main/cron-worker

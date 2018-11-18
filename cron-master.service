@@ -15,7 +15,7 @@ Group=m8
 # 进程退出立即重启
 Restart=always
 # 执行命令
-ExecStart=/home/m8/crontab/master/main -config=/home/m8/crontab/master/master.json
+ExecStart=/home/m8/crontab/master/cron-master -config=/home/m8/crontab/master/master.json
 # 进程工作目录
 WorkingDirectory=/home/m8/crontab/master
 
