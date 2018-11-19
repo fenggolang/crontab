@@ -3,6 +3,7 @@ package worker
 import (
 	"context"
 	"net"
+	"strings"
 	"time"
 
 	"github.com/coreos/etcd/clientv3"
@@ -38,8 +39,8 @@ func getLocalIP() (ipv4 string, err error) {
 	for _, addr = range addrs {
 		// 这个网络地址是IP地址: ipv4, ipv6
 		if ipNet, isIpNet = addr.(*net.IPNet); isIpNet && !ipNet.IP.IsLoopback() {
-			// 跳过IPV6
-			if ipNet.IP.To4() != nil {
+			// 跳过IPV6 ,以及排除掉以.0.1结尾的,这种结尾的一般是k8s集群的pod ip网关地址
+			if ipNet.IP.To4() != nil && !strings.HasSuffix(string(ipNet.IP.To4()), ".0.1") {
 				ipv4 = ipNet.IP.String() // 192.168.1.1
 				return
 			}
