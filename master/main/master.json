@@ -1,6 +1,6 @@
 {
   "API接口服务端口": "提供任务增删改查服务",
-  "apiPort": 8070,
+  "apiPort": 8080,
 
   "API接口读超时": "单位是毫秒",
   "apiReadTimeout": 5000,
