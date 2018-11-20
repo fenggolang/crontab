@@ -3,6 +3,7 @@ package worker
 import (
 	"context"
 	"net"
+	"os"
 	"strings"
 	"time"
 
@@ -16,7 +17,8 @@ type Register struct {
 	kv     clientv3.KV
 	lease  clientv3.Lease
 
-	localIP string // 本机IP
+	localIP       string // 本机IP
+	localHostname string // 本机Hostname
 }
 
 var (
@@ -49,6 +51,14 @@ func getLocalIP() (ipv4 string, err error) {
 
 	err = common.ERR_NO_LOCAL_IP_FOUND
 	return
+}
+
+// 获取本机主机名称
+func getLocalHostname() (hostname string, err error) {
+	if hostname, err = os.Hostname(); err != nil {
+		return "", err
+	}
+	return hostname, nil
 }
 
 // 注册到/cron/workers/IP, 并自动续租
@@ -106,11 +116,12 @@ func (register *Register) keepOnline() {
 
 func InitRegister() (err error) {
 	var (
-		config  clientv3.Config
-		client  *clientv3.Client
-		kv      clientv3.KV
-		lease   clientv3.Lease
-		localIp string
+		config        clientv3.Config
+		client        *clientv3.Client
+		kv            clientv3.KV
+		lease         clientv3.Lease
+		localIp       string
+		localHostname string
 	)
 
 	// 初始化配置
@@ -129,15 +140,20 @@ func InitRegister() (err error) {
 		return
 	}
 
+	// 本地主机名
+	if localHostname, err = getLocalHostname(); err != nil {
+		return
+	}
 	// 得到KV和Lease的API子集
 	kv = clientv3.NewKV(client)
 	lease = clientv3.NewLease(client)
 
 	G_register = &Register{
-		client:  client,
-		kv:      kv,
-		lease:   lease,
-		localIP: localIp,
+		client:        client,
+		kv:            kv,
+		lease:         lease,
+		localIP:       localIp,
+		localHostname: localHostname,
 	}
 
 	// 服务注册

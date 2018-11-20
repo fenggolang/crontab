@@ -197,7 +197,7 @@ ERR:
 }
 
 // 获取健康worker节点列表
-func handleWorkerList(resp http.ResponseWriter, req *http.Request) {
+func handleWorkerList(resp http.ResponseWriter, _ *http.Request) {
 	var (
 		workerArr []string
 		err       error
