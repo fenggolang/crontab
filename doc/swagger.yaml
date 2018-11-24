@@ -1,0 +1,142 @@
+swagger: "2.0"
+info:
+  description: "Golang因其强大的协程机制，现已广泛应用与解决分布式环境下的高并发问题.
+                结合Etcd与MongoDB实现一个基于Master-Worker分布式架构的任务调度系统"
+  version: "1.0.0"
+  title: "分布式定时任务调度系统"
+host: "172.17.10.213:8080"
+tags:
+  - name: Job
+    description: "Job任务管理"
+  - name: Worker
+    description: "worker节点管理"
+schemes:
+  - "http"
+paths:
+  '/job/save':
+    post:
+      tags:
+        - Job
+      summary: "保存任务"
+      operationId: "handleJobSave"
+      consumes: # 请求格式
+        - 'application/x-www-form-urlencoded'
+      produces: # 响应格式
+        - 'application/json'
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "body的格式选择x-www-form-urlencoded,key:value形式传递内容"
+          required: true
+          schema:
+            $ref: '#/definitions/Job'
+      responses:
+        200:
+          description: "任务保存成功"
+          schema:
+            $ref: '#/definitions/Response'
+        500:
+          description: "服务端错误"
+          schema:
+            $ref: '#/definitions/Response'
+  '/job/delete':
+    post:
+      tags:
+        - Job
+      summary: "删除任务"
+      operationId: "handleJobDelete"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "body的格式选择x-www-form-urlencoded,key:value形式传递内容"
+          required: true
+          schema:
+            $ref: '#/definitions/Job'
+      responses:
+        200:
+          description: "任务删除成功"
+  '/job/list':
+    get:
+      tags:
+        - Job
+      summary: "查看任务列表"
+      operationId: "handleJobList"
+      produces:
+        - 'application/json'
+      responses:
+        200:
+          description: "任务列表获取成功"
+  '/job/kill':
+    post:
+      tags:
+        - Job
+      summary: "强杀任务"
+      operationId: "handleJobKill"
+      consumes:
+        - 'application/x-www-form-urlencoded'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "body的格式选择x-www-form-urlencoded,key:value形式传递内容"
+          required: true
+      responses:
+        200:
+          description: "强杀任务成功"
+  '/job/log':
+    get:
+      tags:
+        - Job
+      summary: "查看任务执行日志"
+      operationId: "handleJobLog"
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: "name"
+          description: "任务名称"
+          required: true
+      responses:
+        200:
+          description: "成功"
+        500:
+          description: "失败"
+  '/worker/list':
+    get:
+      tags:
+        - Worker
+      summary: "获取worker节点列表"
+      operationId: "handleWorkerList"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: "成功"
+        500:
+          description: "失败"
+definitions:
+  Job:
+    type: "object"
+    properties:
+      Name:
+        default: "test"
+        type: "string"
+      Command:
+        default: "echo hello"
+        type: "string"
+      CronExpr:
+        default: "*/5 * * * * * *"
+        type: "string"
+  Response:
+    type: "object"
+    properties:
+      Errno:
+        type: "integer"
+        default: "-1"
+      Msg:
+        type: "string"
+        default: "error...."
+      Data:
+        type: "string"
+        default: "nil"

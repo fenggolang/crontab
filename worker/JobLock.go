@@ -78,7 +78,7 @@ func (jobLock *JobLock) TryLock() (err error) {
 	txn = jobLock.kv.Txn(context.TODO())
 
 	// 锁路径
-	lockKey = common.JOB_LOCK_DIR + jobLock.jobName
+	lockKey = common.JobLockDir + jobLock.jobName
 
 	// 5, 事务抢锁
 	txn.If(clientv3.Compare(clientv3.CreateRevision(lockKey), "=", 0)).
@@ -92,7 +92,7 @@ func (jobLock *JobLock) TryLock() (err error) {
 
 	// 6, 成功返回, 失败释放租约
 	if !txnResp.Succeeded { // 锁被占用
-		err = common.ERR_LOCK_ALREADY_REQUIRED
+		err = common.ErrLockAlreadyRequired
 		goto FAIL
 	}
 

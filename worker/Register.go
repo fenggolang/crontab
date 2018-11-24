@@ -49,7 +49,7 @@ func getLocalIP() (ipv4 string, err error) {
 		}
 	}
 
-	err = common.ERR_NO_LOCAL_IP_FOUND
+	err = common.ErrNoLocalIpFound
 	return
 }
 
@@ -75,7 +75,7 @@ func (register *Register) keepOnline() {
 
 	for {
 		// 注册路径
-		regKey = common.JOB_WORKER_DIR + register.localIP
+		regKey = common.JobWorkerDir + register.localIP
 
 		cancelFunc = nil
 

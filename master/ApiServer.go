@@ -238,6 +238,7 @@ func InitApiServer() (err error) {
 	mux.HandleFunc("/job/kill", handleJobKill)
 	mux.HandleFunc("/job/log", handleJobLog)
 	mux.HandleFunc("/worker/list", handleWorkerList)
+	//mux.Handle("/doc/",http.StripPrefix("/doc/",http.FileServer(http.Dir("./doc/"))))
 
 	//  /index.html
 

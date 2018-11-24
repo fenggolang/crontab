@@ -37,7 +37,7 @@ func (jobMgr *JobMgr) watchJobs() (err error) {
 	)
 
 	// 1, get一下/cron/jobs/目录下的所有任务，并且获知当前集群的revision
-	if getResp, err = jobMgr.kv.Get(context.TODO(), common.JOB_SAVE_DIR, clientv3.WithPrefix()); err != nil {
+	if getResp, err = jobMgr.kv.Get(context.TODO(), common.JobSaveDir, clientv3.WithPrefix()); err != nil {
 		return
 	}
 
@@ -45,7 +45,7 @@ func (jobMgr *JobMgr) watchJobs() (err error) {
 	for _, kvpair = range getResp.Kvs {
 		// 反序列化json得到Job
 		if job, err = common.UnpackJob(kvpair.Value); err == nil {
-			jobEvent = common.BuildJobEvent(common.JOB_EVENT_SAVE, job)
+			jobEvent = common.BuildJobEvent(common.JobEventSave, job)
 			// 同步给scheduler(调度协程)
 			G_scheduler.PushJobEvent(jobEvent)
 		}
@@ -56,7 +56,7 @@ func (jobMgr *JobMgr) watchJobs() (err error) {
 		// 从GET时刻的后续版本开始监听变化
 		watchStartRevision = getResp.Header.Revision + 1
 		// 监听/cron/jobs/目录的后续变化
-		watchChan = jobMgr.watcher.Watch(context.TODO(), common.JOB_SAVE_DIR, clientv3.WithRev(watchStartRevision), clientv3.WithPrefix())
+		watchChan = jobMgr.watcher.Watch(context.TODO(), common.JobSaveDir, clientv3.WithRev(watchStartRevision), clientv3.WithPrefix())
 		// 处理监听事件
 		for watchResp = range watchChan {
 			for _, watchEvent = range watchResp.Events {
@@ -66,7 +66,7 @@ func (jobMgr *JobMgr) watchJobs() (err error) {
 						continue
 					}
 					// 构建一个更新Event
-					jobEvent = common.BuildJobEvent(common.JOB_EVENT_SAVE, job)
+					jobEvent = common.BuildJobEvent(common.JobEventSave, job)
 				case mvccpb.DELETE: // 任务被删除了
 					// Delete /cron/jobs/job10
 					jobName = common.ExtractJobName(string(watchEvent.Kv.Key))
@@ -74,7 +74,7 @@ func (jobMgr *JobMgr) watchJobs() (err error) {
 					job = &common.Job{Name: jobName}
 
 					// 构建一个删除Event
-					jobEvent = common.BuildJobEvent(common.JOB_EVENT_DELETE, job)
+					jobEvent = common.BuildJobEvent(common.JobEventDelete, job)
 				}
 				// 变化推给scheduler
 				G_scheduler.PushJobEvent(jobEvent)
@@ -97,7 +97,7 @@ func (jobMgr *JobMgr) watchKiller() {
 	// 监听/cron/killer目录
 	go func() { // 监听协程
 		// 监听/cron/killer/目录的变化
-		watchChan = jobMgr.watcher.Watch(context.TODO(), common.JOB_KILLER_DIR, clientv3.WithPrefix())
+		watchChan = jobMgr.watcher.Watch(context.TODO(), common.JobKillerDir, clientv3.WithPrefix())
 		// 处理监听事件
 		for watchResp = range watchChan {
 			for _, watchEvent = range watchResp.Events {
@@ -105,7 +105,7 @@ func (jobMgr *JobMgr) watchKiller() {
 				case mvccpb.PUT: // 杀死任务事件
 					jobName = common.ExtractKillerName(string(watchEvent.Kv.Key))
 					job = &common.Job{Name: jobName}
-					jobEvent = common.BuildJobEvent(common.JOB_EVENT_KILL, job)
+					jobEvent = common.BuildJobEvent(common.JobEventKill, job)
 					// 事件推给scheduler
 					G_scheduler.PushJobEvent(jobEvent)
 				case mvccpb.DELETE: // killer标记过期, 被自动删除

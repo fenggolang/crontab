@@ -70,7 +70,7 @@ func (jobMgr *JobMgr) SaveJob(job *common.Job) (oldJob *common.Job, err error) {
 	)
 
 	// etcd的保存key
-	jobKey = common.JOB_SAVE_DIR + job.Name
+	jobKey = common.JobSaveDir + job.Name
 	// 任务信息json
 	if jobValue, err = json.Marshal(job); err != nil {
 		return
@@ -100,7 +100,7 @@ func (jobMgr *JobMgr) DeleteJob(name string) (oldJob *common.Job, err error) {
 	)
 
 	// etcd中保存任务的key
-	jobKey = common.JOB_SAVE_DIR + name
+	jobKey = common.JobSaveDir + name
 
 	// 从etcd中删除它
 	if delResp, err = jobMgr.kv.Delete(context.TODO(), jobKey, clientv3.WithPrevKV()); err != nil {
@@ -129,7 +129,7 @@ func (jobMgr *JobMgr) ListJobs() (jobList []*common.Job, err error) {
 	)
 
 	// 任务保存的目录
-	dirKey = common.JOB_SAVE_DIR
+	dirKey = common.JobSaveDir
 
 	// 获取目录下所有任务信息
 	if getResp, err = jobMgr.kv.Get(context.TODO(), dirKey, clientv3.WithPrefix()); err != nil {
@@ -162,7 +162,7 @@ func (jobMgr *JobMgr) KillJob(name string) (err error) {
 	)
 
 	// 通知worker杀死对应任务
-	killerKey = common.JOB_KILLER_DIR + name
+	killerKey = common.JobKillerDir + name
 
 	// 让worker监听到一次put操作, 创建一个租约让其稍后自动过期即可
 	if leaseGrantResp, err = jobMgr.lease.Grant(context.TODO(), 1); err != nil {
