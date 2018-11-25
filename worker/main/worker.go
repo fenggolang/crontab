@@ -3,8 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"runtime"
-	"time"
+		"time"
 
 	"github.com/fenggolang/crontab/worker"
 )
@@ -21,10 +20,11 @@ func initArgs() {
 	flag.Parse()
 }
 
+// Go 1.5 版本之前，默认使用的是单核心执行。从 Go 1.5 版本开始，默认执行下面语句以便让代码并发执行，最大效率地利用 CPU。(所以go1.5以上不用再指定)
 // 初始化线程数量
-func initEnv() {
-	runtime.GOMAXPROCS(runtime.NumCPU())
-}
+//func initEnv() {
+//	runtime.GOMAXPROCS(runtime.NumCPU())
+//}
 
 func main() {
 	var (
@@ -35,7 +35,7 @@ func main() {
 	initArgs()
 
 	// 初始化线程
-	initEnv()
+	//initEnv()
 
 	// 加载配置
 	if err = worker.InitConfig(confFile); err != nil {

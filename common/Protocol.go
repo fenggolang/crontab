@@ -3,11 +3,11 @@ package common
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strings"
 	"time"
 
 	"github.com/gorhill/cronexpr"
-	"fmt"
 )
 
 // 定时任务
@@ -65,6 +65,7 @@ type JobLog struct {
 	ScheduleTime int64  `json:"scheduleTime" bson:"scheduleTime"` // 实际调度时间
 	StartTime    int64  `json:"startTime" bson:"startTime"`       // 任务执行开始时间
 	EndTime      int64  `json:"endTime" bson:"endTime"`           // 任务执行结束时间
+	//JobWithIP    string `json:"jobWithIP" bson:"jobWithIP"`       // 任务被调度到哪一台worker节点上执行
 }
 
 // 日志批次
@@ -120,7 +121,7 @@ func ExtractJobName(jobKey string) string {
 
 // 从 /cron/killer/job10提取job10
 func ExtractKillerName(killerKey string) string {
-	fmt.Println("killerKey:",killerKey)
+	fmt.Println("killerKey:", killerKey)
 	return strings.TrimPrefix(killerKey, JobKillerDir)
 }
 

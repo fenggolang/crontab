@@ -21,7 +21,7 @@ var (
 )
 
 // 保存任务接口
-// POST job={"name": "job1", "command": "echo hello", "cronExpr": "* * * * *"}
+// POST job={"name": "job1", "command": "echo hello", "cronExpr": "* * * * * * *"}
 func handleJobSave(resp http.ResponseWriter, req *http.Request) {
 	var (
 		err     error
@@ -37,7 +37,7 @@ func handleJobSave(resp http.ResponseWriter, req *http.Request) {
 	}
 	// 2, 取表单中的job字段
 	postJob = req.PostForm.Get("job")
-	// 3, 反序列化job
+	// 3, 反序列化job:把字节数组[]byte转为job结构体对象
 	if err = json.Unmarshal([]byte(postJob), &job); err != nil {
 		goto ERR
 	}

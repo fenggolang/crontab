@@ -19,7 +19,7 @@ type Config struct {
 }
 
 var (
-	// 单例
+	// 单例,全局(Global)只需要一个
 	G_config *Config
 )
 
@@ -30,12 +30,14 @@ func InitConfig(filename string) (err error) {
 		conf    Config
 	)
 
+	// 要读Reader, 图方便用ioutil.ReadAll(reader)
+	// 一次性读取文件，使用ioutil.ReadFile(filename)
 	// 1, 把配置文件读进来
 	if content, err = ioutil.ReadFile(filename); err != nil {
 		return
 	}
 
-	// 2, 做JSON反序列化
+	// 2, 做JSON反序列化:把读取的字节反序列化为Config结构体
 	if err = json.Unmarshal(content, &conf); err != nil {
 		return
 	}

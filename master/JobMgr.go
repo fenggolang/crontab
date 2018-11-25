@@ -26,7 +26,7 @@ var (
 	G_jobMgr *JobMgr
 )
 
-// 初始化管理器,去建立和etcd的连接
+// 初始化任务管理器,去建立和etcd的连接
 func InitJobMgr() (err error) {
 	var (
 		config clientv3.Config
@@ -35,22 +35,22 @@ func InitJobMgr() (err error) {
 		lease  clientv3.Lease
 	)
 
-	// 初始化配置
+	// 1. 初始化配置
 	config = clientv3.Config{
 		Endpoints:   G_config.EtcdEndpoints,                                     // 集群地址
 		DialTimeout: time.Duration(G_config.EtcdDialTimeout) * time.Millisecond, // 连接超时
 	}
 
-	// 建立连接
+	// 2. 建立连接
 	if client, err = clientv3.New(config); err != nil {
 		return
 	}
 
-	// 得到KV和Lease的API子集
+	// 3. 得到KV和Lease的API子集
 	kv = clientv3.NewKV(client)
 	lease = clientv3.NewLease(client)
 
-	// 赋值单例
+	// 4.赋值单例
 	G_jobMgr = &JobMgr{
 		client: client,
 		kv:     kv,
@@ -71,7 +71,7 @@ func (jobMgr *JobMgr) SaveJob(job *common.Job) (oldJob *common.Job, err error) {
 
 	// etcd的保存key
 	jobKey = common.JobSaveDir + job.Name
-	// 任务信息json
+	// 任务信息json，job结构体对象序列化为字节数组[]byte，看看是否合法的完整的满足Job结构体
 	if jobValue, err = json.Marshal(job); err != nil {
 		return
 	}

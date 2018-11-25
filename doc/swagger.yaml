@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
-  description: "Golang因其强大的协程机制，现已广泛应用与解决分布式环境下的高并发问题.
-                结合Etcd与MongoDB实现一个基于Master-Worker分布式架构的任务调度系统"
+  description: "Golang因其强大的协程机制，现已广泛应用于解决分布式环境下的高并发问题.
+                结合Etcd与MongoDB实现一个基于Master-Worker分布式架构的任务调度系统."
   version: "1.0.0"
   title: "分布式定时任务调度系统"
 host: "172.17.10.213:8080"
