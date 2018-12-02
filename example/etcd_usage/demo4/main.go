@@ -35,10 +35,12 @@ func main() {
 	kv.Put(context.TODO(), "/cron/jobs/job2", "{...}")
 
 	// 读取/cron/jobs为前缀的所有key
+	//if getResp, err = kv.Get(context.TODO(), "/cron/jobs/", clientv3.WithPrefix(), clientv3.GetLogger()); err != nil {
 	if getResp, err = kv.Get(context.TODO(), "/cron/jobs/", clientv3.WithPrefix()); err != nil {
 		fmt.Println(err)
 		return
 	} else { // 获取成功，遍历所有的kvc
-		fmt.Println(getResp.Kvs)
+		fmt.Println(getResp.Header.RaftTerm)
+		fmt.Println(getResp.Header.GetRaftTerm())
 	}
 }
