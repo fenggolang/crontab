@@ -26,7 +26,7 @@ var (
 func (jobMgr *JobMgr) watchJobs() (err error) {
 	var (
 		getResp            *clientv3.GetResponse
-		kvpair             *mvccpb.KeyValue
+		kvPair             *mvccpb.KeyValue
 		job                *common.Job
 		watchStartRevision int64
 		watchChan          clientv3.WatchChan
@@ -42,9 +42,10 @@ func (jobMgr *JobMgr) watchJobs() (err error) {
 	}
 
 	// 当前有哪些任务
-	for _, kvpair = range getResp.Kvs {
+	for _, kvPair = range getResp.Kvs {
 		// 反序列化json得到Job
-		if job, err = common.UnpackJob(kvpair.Value); err == nil {
+		if job, err = common.UnpackJob(kvPair.Value); err == nil {
+			// 构造保存任务事件
 			jobEvent = common.BuildJobEvent(common.JobEventSave, job)
 			// 同步给scheduler(调度协程)
 			G_scheduler.PushJobEvent(jobEvent)

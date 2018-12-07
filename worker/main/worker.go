@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-		"time"
+	"time"
 
 	"github.com/fenggolang/crontab/worker"
 )
@@ -47,22 +47,22 @@ func main() {
 		goto ERR
 	}
 
-	// 启动日志协程
+	// 启动日志器：日志协程
 	if err = worker.InitLogSink(); err != nil {
 		goto ERR
 	}
 
-	// 启动执行器
+	// 启动执行器：执行协程
 	if err = worker.InitExecutor(); err != nil {
 		goto ERR
 	}
 
-	// 启动调度器
+	// 启动调度器：调度协程
 	if err = worker.InitScheduler(); err != nil {
 		goto ERR
 	}
 
-	// 初始化任务管理器
+	// 初始化任务管理器：监听协程
 	if err = worker.InitJobMgr(); err != nil {
 		goto ERR
 	}

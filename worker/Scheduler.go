@@ -9,7 +9,7 @@ import (
 
 // 任务调度
 type Scheduler struct {
-	jobEventChan      chan *common.JobEvent              //  etcd任务事件队列
+	jobEventChan      chan *common.JobEvent              // etcd任务事件队列
 	jobPlanTable      map[string]*common.JobSchedulePlan // 任务调度计划表
 	jobExecutingTable map[string]*common.JobExecuteInfo  // 任务执行表
 	jobResultChan     chan *common.JobExecuteResult      // 任务结果队列
@@ -28,6 +28,7 @@ func (scheduler *Scheduler) handleJobEvent(jobEvent *common.JobEvent) {
 		jobExisted      bool
 		err             error
 	)
+
 	switch jobEvent.EventType {
 	case common.JobEventSave: // 保存任务事件
 		if jobSchedulePlan, err = common.BuildJobSchedulePlan(jobEvent.Job); err != nil {
@@ -47,6 +48,7 @@ func (scheduler *Scheduler) handleJobEvent(jobEvent *common.JobEvent) {
 }
 
 // 尝试执行任务
+// 取名为TryStartJob表示这个执行可能因为执行表中发现这个任务正在执行中则无需在再执行此任务(防止并发)，方法直接return返回.
 func (scheduler *Scheduler) TryStartJob(jobPlan *common.JobSchedulePlan) {
 	// 调度 和 执行 是2件事情
 	var (
@@ -74,6 +76,7 @@ func (scheduler *Scheduler) TryStartJob(jobPlan *common.JobSchedulePlan) {
 }
 
 // 重新计算任务调度状态
+// 取名为TrySchedule表示这个调度可能因为调度计划表为空则没有可调度的任务，方法直接return返回.
 func (scheduler *Scheduler) TrySchedule() (scheduleAfter time.Duration) {
 	var (
 		jobPlan  *common.JobSchedulePlan
@@ -81,7 +84,7 @@ func (scheduler *Scheduler) TrySchedule() (scheduleAfter time.Duration) {
 		nearTime *time.Time
 	)
 
-	// 如果任务表为空话，随便睡眠多久
+	// 如果任务表为空，随便睡眠多久
 	if len(scheduler.jobPlanTable) == 0 {
 		scheduleAfter = 1 * time.Second
 		return
@@ -112,6 +115,7 @@ func (scheduler *Scheduler) handleJobResult(result *common.JobExecuteResult) {
 	var (
 		jobLog *common.JobLog
 	)
+
 	// 删除执行状态
 	delete(scheduler.jobExecutingTable, result.ExecuteInfo.Job.Name)
 
@@ -155,7 +159,7 @@ func (scheduler *Scheduler) scheduleLoop() {
 	// 定时任务common.Job
 	for {
 		select {
-		case jobEvent = <-scheduler.jobEventChan: //监听任务变化事件
+		case jobEvent = <-scheduler.jobEventChan: // 监听任务变化事件
 			// 对内存中维护的任务列表做增删改查
 			scheduler.handleJobEvent(jobEvent)
 		case <-scheduleTimer.C: // 最近的任务到期了
@@ -182,8 +186,10 @@ func InitScheduler() (err error) {
 		jobExecutingTable: make(map[string]*common.JobExecuteInfo),
 		jobResultChan:     make(chan *common.JobExecuteResult, 1000),
 	}
+
 	// 启动调度协程
 	go G_scheduler.scheduleLoop()
+
 	return
 }
 
