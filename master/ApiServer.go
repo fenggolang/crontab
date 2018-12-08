@@ -228,7 +228,6 @@ func InitApiServer() (err error) {
 		httpServer    *http.Server
 		staticDir     http.Dir     // 静态文件根目录
 		staticHandler http.Handler // 静态文件的HTTP回调
-		aa            byte
 	)
 
 	// 配置路由
@@ -239,7 +238,6 @@ func InitApiServer() (err error) {
 	mux.HandleFunc("/job/kill", handleJobKill)
 	mux.HandleFunc("/job/log", handleJobLog)
 	mux.HandleFunc("/worker/list", handleWorkerList)
-	//mux.Handle("/doc/",http.StripPrefix("/doc/",http.FileServer(http.Dir("./doc/"))))
 
 	//  /index.html
 

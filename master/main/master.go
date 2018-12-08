@@ -3,7 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-		"time"
+	"runtime"
+	"time"
 
 	"github.com/fenggolang/crontab/master"
 )
@@ -24,9 +25,9 @@ func initArgs() {
 // 程的多少决定的并发的好坏，配置线程数量和cpu核心数量相等，发挥最大作用
 // 初始化线程数量
 // Go 1.5 版本之前，默认使用的是单核心执行。从 Go 1.5 版本开始，默认执行下面语句以便让代码并发执行，最大效率地利用 CPU。(所以go1.5以上不用再指定)
-//func initEnv() {
-//	runtime.GOMAXPROCS(runtime.NumCPU())
-//}
+func initEnv() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+}
 
 func main() {
 	var (
@@ -37,7 +38,7 @@ func main() {
 	initArgs()
 
 	// 初始化线程
-	//initEnv()
+	initEnv()
 
 	// 加载配置
 	if err = master.InitConfig(confFile); err != nil {
