@@ -1,4 +1,6 @@
 ## CAP里面(常用于分布式存储)
+[三分钟分布式CAP理论就这么复杂
+](https://www.toutiao.com/a6632502751622332942/?tt_from=mobile_qq&utm_campaign=client_share&timestamp=1544267186&app=news_article_lite&utm_source=mobile_qq&iid=53283503090&utm_medium=toutiao_android&group_id=6632502751622332942)
 ### C(Consistency): 
 ```markdown
 一致性: 写入后立即读到新值
