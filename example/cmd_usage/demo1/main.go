@@ -11,12 +11,13 @@ func main() {
 		err error
 	)
 
-	// linux下执行
-	//cmd = exec.Command("/bin/bash", "-c", "echo 1; echo 2;")
 	// windows下执行
-	cmd = exec.Command("C:\\cygwin64\\bin\\bash.exe", "-c", "echo 1;echo 2;")
+	//cmd = exec.Command("C:\\cygwin64\\bin\\bash.exe", "-c", "echo 1;echo 2;")
+	// linux下执行
+	cmd = exec.Command("/bin/bash", "-c", "sleep 5s;echo 1; echo 2;")
 
-	err = cmd.Run()
+	err = cmd.Run() // 同步执行
+	//err = cmd.Start() // 异步执行
 
 	fmt.Println(err)
 }

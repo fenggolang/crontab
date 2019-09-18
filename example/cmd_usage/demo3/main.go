@@ -38,7 +38,10 @@ func main() {
 			err    error
 		)
 
-		cmd = exec.CommandContext(ctx, "C:\\cygwin64\\bin\\bash.exe", "-c", "sleep 2; echo hello;")
+		//cmd = exec.CommandContext(ctx, "C:\\cygwin64\\bin\\bash.exe", "-c", "sleep 2; echo hello;")
+		//cmd = exec.CommandContext(ctx, "/bin/bash", "-c", "sleep 2; echo hello;")
+		//cmd = exec.CommandContext(ctx, "/bin/bash", "-c", "docker pull hello-world:latest")
+		cmd = exec.CommandContext(ctx, "/bin/bash", "-c", "ansible all -m ping")
 
 		// 执行任务，捕获输出
 		output, err = cmd.CombinedOutput()
@@ -51,7 +54,8 @@ func main() {
 	}()
 
 	// 继续往下走
-	time.Sleep(1 * time.Second)
+	//time.Sleep(1 * time.Second) // go协程无法执行完，程序最终输出
+	time.Sleep(3 * time.Second) // go协程可以执行完,程序最终输出<nil> hello
 
 	// 取消上下文,程序会杀死与之关联的协程中的子进程
 	cancelFunc()
