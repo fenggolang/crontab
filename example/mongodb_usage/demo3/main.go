@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mongodb/mongo-go-driver/bson/objectid"
-	"github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/mongodb/mongo-go-driver/mongo/clientopt"
+	"go.mongodb.org/mongo-driver/bson/objectid"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // 任务的执行时间点
@@ -39,7 +39,8 @@ func main() {
 	)
 
 	// 1. 建立连接
-	if client, err = mongo.Connect(context.TODO(), "mongodb://172.17.10.210:27017", clientopt.ConnectTimeout(5*time.Second)); err != nil {
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	if client, err = mongo.Connect(ctx, options.Client().ApplyURI("mongodb://172.17.10.210:27017")); err != nil {
 		fmt.Println(err)
 		return
 	}

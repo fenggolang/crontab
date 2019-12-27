@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/fenggolang/crontab/common"
-	"github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/mongodb/mongo-go-driver/mongo/clientopt"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/clientopt"
 )
 
 // mongodb存储日志

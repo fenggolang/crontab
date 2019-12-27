@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/objectid"
-	"github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/mongodb/mongo-go-driver/mongo/clientopt"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // 任务的执行时间点
@@ -36,7 +37,8 @@ func main() {
 		docId      objectid.ObjectID
 	)
 	// 1. 建立连接
-	if client, err = mongo.Connect(context.TODO(), "mongodb://172.17.10.210:27017", clientopt.ConnectTimeout(5*time.Second)); err != nil {
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	if client, err = mongo.Connect(ctx, options.Client().ApplyURI("mongodb://172.17.10.210:27017")); err != nil {
 		fmt.Println(err)
 		return
 	}
@@ -64,6 +66,7 @@ func main() {
 	}
 
 	// _id: 默认生成一个全局唯一ID,ObjectID:12字节的二进制
+	bson.TypeObjectID.String()
 	docId = result.InsertedID.(objectid.ObjectID)
 	fmt.Println("自增ID:", docId.Hex())
 
